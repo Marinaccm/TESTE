@@ -105,10 +105,10 @@ void main(void)
     P1REN |=  BIT4;             // Habilita resistor
     P1OUT |=  BIT4;             // Pull-up
 
-     //////Motor A IB
-     P1SEL |=  BIT5;             //Seta pino P6.1 como periférico
-     P1REN |=  BIT5;             // Habilita resistor
-     P1OUT |=  BIT5;             // Resistor do tipo Pull-up
+    //////Motor A IB
+    P1SEL |=  BIT5;             //Seta pino P6.1 como periférico
+    P1REN |=  BIT5;             // Habilita resistor
+    P1OUT |=  BIT5;             // Resistor do tipo Pull-up
 
 
     UCB0CTL1 |= UCSWRST;        // UCSI B0 em ressete
@@ -161,6 +161,10 @@ void main(void)
     //P2IES |= BIT1;  //edge select
     //P2IFG = 0;  //keeps interruption flags
 
+    // To configure the BUZZER we called
+    P1DIR |= BIT4;  //Buzzer, P1.4
+    P1OUT &= ~BIT4; //Buzzer stars off
+
     //ECHO
 
     //Output for SR04 and input for distance processing
@@ -172,20 +176,20 @@ void main(void)
 
 
     //TIMERS
-//
-//    // TIMER A1 WAS CHOSEN TO GENERATE THE PWM SIGNAL
-//    //generates two interruptions in order to build the PWM wave that feeds the input of the SR04 (trigger)
-//    TA1CTL = TASSEL_1|MC_1|TACLR|TAIE;
-//    //First we select the clock source as ACLK//then the timer is put in UP MODE//Reset the timer//TAIE calls off the flag TAIFG
-//    TA1CCR0 = 200;//Defines the frequency of the PWM wave
-//    //For it to be able to read measures at distances of up to 1 meter, it makes itself necessary that the time between waves to be at least 6ms (2/velocity of sound = 2m/343 m/s), seeing as it needs to account for the distance from and to the sensor
-//    //200 means (200/32768=6,1ms -> 6,1ms*343=2m)
-//    //TA1CCR0 = 393;  //The problem asks for the maximum duration to be of 12ms, so X= 0,012/91/32768)= 393,216
-//    TA1CCR1 = 100;//Defines the duty-cycle of the PWM wave
-//    //TA1CCR1 =
-//    TA1CCTL0 = CCIE;
-//    TA1CCTL1 = CCIE; //Not strictly essential, but values were being wrongly allocated before this line was added
-//
+    //
+    //    // TIMER A1 WAS CHOSEN TO GENERATE THE PWM SIGNAL
+    //    //generates two interruptions in order to build the PWM wave that feeds the input of the SR04 (trigger)
+    //    TA1CTL = TASSEL_1|MC_1|TACLR|TAIE;
+    //    //First we select the clock source as ACLK//then the timer is put in UP MODE//Reset the timer//TAIE calls off the flag TAIFG
+    //    TA1CCR0 = 200;//Defines the frequency of the PWM wave
+    //    //For it to be able to read measures at distances of up to 1 meter, it makes itself necessary that the time between waves to be at least 6ms (2/velocity of sound = 2m/343 m/s), seeing as it needs to account for the distance from and to the sensor
+    //    //200 means (200/32768=6,1ms -> 6,1ms*343=2m)
+    //    //TA1CCR0 = 393;  //The problem asks for the maximum duration to be of 12ms, so X= 0,012/91/32768)= 393,216
+    //    TA1CCR1 = 100;//Defines the duty-cycle of the PWM wave
+    //    //TA1CCR1 =
+    //    TA1CCTL0 = CCIE;
+    //    TA1CCTL1 = CCIE; //Not strictly essential, but values were being wrongly allocated before this line was added
+    //
 
     // TIMER A0 WAS CHOSEN TO SEND THE TRIGGER AND RECIEVE THE ECHO SIGNALS
     //A0 is used in capture mode (CM_3) to gather the value at the up slope and the down slope,
@@ -513,7 +517,7 @@ void itoa(int i, char buffer[])
         *--p = digit[i%10];
         i = i/10;
     }while(i);
-//    return buffer;
+    //    return buffer;
 }
 
 
@@ -557,6 +561,10 @@ __interrupt void TA0_ISR(void){
                 sendDistance(distance_string, 3);
                 P6OUT |= BIT0; // P1OUT |= BIT4;
                 P6OUT &= ~BIT1; // P1OUT &= ~BIT5;
+                P1OUT |= BIT4;//liga buzzer
+                __delay_cycles(10);
+                P1OUT &=~ BIT4;
+
 
 
             }
@@ -575,12 +583,12 @@ __interrupt void TA0_ISR(void){
                 sendString("> 200");
             }
 
-//            else
-//            {
-//                // Turn off both
-//                P1OUT &= ~ BIT0;
-//                P7OUT &= ~BIT7;
-//            }
+            //            else
+            //            {
+            //                // Turn off both
+            //                P1OUT &= ~ BIT0;
+            //                P7OUT &= ~BIT7;
+            //            }
         } // Close if-else
         break;
 
