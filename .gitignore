@@ -1,0 +1,5 @@
+.launches/
+.settings/
+Debug/
+targetConfigs/
+lnk_msp430f5529.cmd
