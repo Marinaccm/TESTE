@@ -75,11 +75,12 @@ void LCD_RS_RW1(void);              //ler
 void LCD_wr_nib1(char nib);         //nibble
 void LCD_wr_byte1(char byte);
 void LCD_clr1(void);
+void itoa(int i, char buffer[]);    // transforma de inteiro para vetor de char
 
 // define the up-arrow bitmap
 
 int valor_porta = 0;                //Úlitmo valor escrito na porta
-char distance_string[3];
+char distance_string[33];
 
 void main(void)
 {
@@ -494,6 +495,27 @@ void LCD_clr1(void)
     LCD_wr_byte1(0x1);
 }
 
+void itoa(int i, char buffer[])
+{
+    char const digit[] = "0123456789";
+    char* p = buffer;
+    if(i<0){
+        *p++ = '-';
+        i *= -1;
+    }
+    int shifter = i;
+    do{ //Move to where representation ends
+        ++p;
+        shifter = shifter/10;
+    }while(shifter);
+    *p = '\0';
+    do{ //Move back, inserting digits as u go
+        *--p = digit[i%10];
+        i = i/10;
+    }while(i);
+//    return buffer;
+}
+
 
 //INTERRUPTIONS
 
@@ -531,6 +553,7 @@ __interrupt void TA0_ISR(void){
                 sendString(" ");
                 LCD_posicao(0x4B);
                 //itoa(pulseWidth, distance_string, 10);
+                itoa(pulseWidth, distance_string);
                 sendDistance(distance_string, 3);
                 P6OUT |= BIT0; // P1OUT |= BIT4;
                 P6OUT &= ~BIT1; // P1OUT &= ~BIT5;
