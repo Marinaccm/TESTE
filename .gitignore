@@ -1,5 +1,5 @@
 .launches/*
 .settings/*
-Debug/*
+Debug/main.obj
 targetConfigs/*
 lnk_msp430f5529.cmd
