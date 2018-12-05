@@ -1,7 +1,7 @@
 ******************************************************************************
                   MSP430 Linker PC v18.1.3                     
 ******************************************************************************
->> Linked Wed Dec  5 20:01:40 2018
+>> Linked Wed Dec  5 20:17:36 2018
 
 OUTPUT FILE NAME:   <TESTE.out>
 ENTRY POINT SYMBOL: "_c_int00_noargs"  address: 000044e0
@@ -85,7 +85,7 @@ MEMORY CONFIGURATION
   INT61                 0000fffa   00000002  00000002  00000000  RWIX
   INT62                 0000fffc   00000002  00000002  00000000  RWIX
   RESET                 0000fffe   00000002  00000002  00000000  RWIX
-  FLASH2                00010000   00014400  00000534  00013ecc  RWIX
+  FLASH2                00010000   00014400  0000054c  00013eb4  RWIX
 
 
 SECTION ALLOCATION MAP
@@ -203,46 +203,46 @@ SYSNMI     0    0000fffc    00000002
 .reset     0    0000fffe    00000002     
                   0000fffe    00000002     rts430x_lc_rd_eabi.lib : boot.c.obj (.reset)
 
-.text      0    00010000    00000534     
+.text      0    00010000    0000054c     
                   00010000    00000110     main.obj (.text:main)
-                  00010110    00000076     main.obj (.text:LCD_start)
-                  00010186    00000076     rts430x_lc_rd_eabi.lib : copy_decompress_lzss.c.obj (.text:decompress:lzss:__TI_decompress_lzss)
-                  000101fc    00000072     main.obj (.text:itoa)
-                  0001026e    00000054     rts430x_lc_rd_eabi.lib : autoinit.c.obj (.text:__TI_auto_init_nobinit_nopinit_hold_wdt:__TI_auto_init_nobinit_nopinit_hold_wdt)
-                  000102c2    0000003c     main.obj (.text:LCD_WR_NIB)
-                  000102fe    00000036     main.obj (.text:PCF_write)
-                  00010334    00000034     main.obj (.text:LCD_wr_nib1)
-                  00010368    0000002c     rts430x_lc_rd_eabi.lib : div16s.asm.obj (.text)
-                  00010394    00000028     main.obj (.text:sendDistance)
-                  000103bc    00000024     rts430x_lc_rd_eabi.lib : copy_zero_init.c.obj (.text:decompress:ZI:__TI_zero_init_nomemset:__TI_zero_init_nomemset)
-                  000103e0    00000024     main.obj (.text:wait_receive)
-                  00010404    00000022     main.obj (.text:LCD_posicao)
-                  00010426    00000018     main.obj (.text:LCD_WR_BT)
-                  0001043e    00000018     main.obj (.text:LCD_wr_byte1)
-                  00010456    00000016     main.obj (.text:LCD_RS_rw)
-                  0001046c    00000016     rts430x_lc_rd_eabi.lib : div16u.asm.obj (.text)
-                  00010482    00000014     main.obj (.text:LCD_RS_rw1)
-                  00010496    00000014     rts430x_lc_rd_eabi.lib : memcpy.c.obj (.text:memcpy)
-                  000104aa    00000012     main.obj (.text:LCD_00)
-                  000104bc    00000012     rts430x_lc_rd_eabi.lib : copy_decompress_none.c.obj (.text:decompress:none:__TI_decompress_none)
-                  000104ce    00000012     main.obj (.text:sendString)
-                  000104e0    00000010     main.obj (.text:LCD_rs_rw)
-                  000104f0    0000000e     main.obj (.text:LCD_OFF)
-                  000104fe    0000000e     main.obj (.text:LCD_ON)
-                  0001050c    0000000e     main.obj (.text:LCD_char1)
-                  0001051a    0000000e     main.obj (.text:lcdBacklightON)
-                  00010528    00000006     rts430x_lc_rd_eabi.lib : exit.c.obj (.text:abort)
-                  0001052e    00000004                            : pre_init.c.obj (.text:_system_pre_init)
-                  00010532    00000002                            : startup.c.obj (.text:_system_post_cinit)
+                  00010110    0000008a     main.obj (.text:itoa)
+                  0001019a    00000076     main.obj (.text:LCD_start)
+                  00010210    00000076     rts430x_lc_rd_eabi.lib : copy_decompress_lzss.c.obj (.text:decompress:lzss:__TI_decompress_lzss)
+                  00010286    00000054                            : autoinit.c.obj (.text:__TI_auto_init_nobinit_nopinit_hold_wdt:__TI_auto_init_nobinit_nopinit_hold_wdt)
+                  000102da    0000003c     main.obj (.text:LCD_WR_NIB)
+                  00010316    00000036     main.obj (.text:PCF_write)
+                  0001034c    00000034     main.obj (.text:LCD_wr_nib1)
+                  00010380    0000002c     rts430x_lc_rd_eabi.lib : div16s.asm.obj (.text)
+                  000103ac    00000028     main.obj (.text:sendDistance)
+                  000103d4    00000024     rts430x_lc_rd_eabi.lib : copy_zero_init.c.obj (.text:decompress:ZI:__TI_zero_init_nomemset:__TI_zero_init_nomemset)
+                  000103f8    00000024     main.obj (.text:wait_receive)
+                  0001041c    00000022     main.obj (.text:LCD_posicao)
+                  0001043e    00000018     main.obj (.text:LCD_WR_BT)
+                  00010456    00000018     main.obj (.text:LCD_wr_byte1)
+                  0001046e    00000016     main.obj (.text:LCD_RS_rw)
+                  00010484    00000016     rts430x_lc_rd_eabi.lib : div16u.asm.obj (.text)
+                  0001049a    00000014     main.obj (.text:LCD_RS_rw1)
+                  000104ae    00000014     rts430x_lc_rd_eabi.lib : memcpy.c.obj (.text:memcpy)
+                  000104c2    00000012     main.obj (.text:LCD_00)
+                  000104d4    00000012     rts430x_lc_rd_eabi.lib : copy_decompress_none.c.obj (.text:decompress:none:__TI_decompress_none)
+                  000104e6    00000012     main.obj (.text:sendString)
+                  000104f8    00000010     main.obj (.text:LCD_rs_rw)
+                  00010508    0000000e     main.obj (.text:LCD_OFF)
+                  00010516    0000000e     main.obj (.text:LCD_ON)
+                  00010524    0000000e     main.obj (.text:LCD_char1)
+                  00010532    0000000e     main.obj (.text:lcdBacklightON)
+                  00010540    00000006     rts430x_lc_rd_eabi.lib : exit.c.obj (.text:abort)
+                  00010546    00000004                            : pre_init.c.obj (.text:_system_pre_init)
+                  0001054a    00000002                            : startup.c.obj (.text:_system_post_cinit)
 
 MODULE SUMMARY
 
        Module                       code   ro data   rw data
        ------                       ----   -------   -------
     .\
-       main.obj                     1204   53        46     
+       main.obj                     1228   53        46     
     +--+----------------------------+------+---------+---------+
-       Total:                       1204   53        46     
+       Total:                       1228   53        46     
                                                             
     C:\ti\ccsv8\tools\compiler\ti-cgt-msp430_18.1.3.LTS\lib\rts430x_lc_rd_eabi.lib
        copy_decompress_lzss.c.obj   118    0         0      
@@ -283,7 +283,7 @@ MODULE SUMMARY
        Stack:                       0      0         160    
        Linker Generated:            0      41        0      
     +--+----------------------------+------+---------+---------+
-       Grand Total:                 1594   136       206    
+       Grand Total:                 1618   136       206    
 
 
 LINKER GENERATED COPY TABLES
@@ -387,7 +387,7 @@ address   name
 00000732  ADC12MEM9                              
 00000733  ADC12MEM9_H                            
 00000732  ADC12MEM9_L                            
-00010528  C$$EXIT                                
+00010540  C$$EXIT                                
 000008c0  CBCTL0                                 
 000008c1  CBCTL0_H                               
 000008c0  CBCTL0_L                               
@@ -473,19 +473,19 @@ address   name
 00000146  FCTL4                                  
 00000147  FCTL4_H                                
 00000146  FCTL4_L                                
-000104aa  LCD_00                                 
-000104f0  LCD_OFF                                
-000104fe  LCD_ON                                 
-00010456  LCD_RS_rw                              
-00010482  LCD_RS_rw1                             
-00010426  LCD_WR_BT                              
-000102c2  LCD_WR_NIB                             
-0001050c  LCD_char1                              
-00010404  LCD_posicao                            
-000104e0  LCD_rs_rw                              
-00010110  LCD_start                              
-0001043e  LCD_wr_byte1                           
-00010334  LCD_wr_nib1                            
+000104c2  LCD_00                                 
+00010508  LCD_OFF                                
+00010516  LCD_ON                                 
+0001046e  LCD_RS_rw                              
+0001049a  LCD_RS_rw1                             
+0001043e  LCD_WR_BT                              
+000102da  LCD_WR_NIB                             
+00010524  LCD_char1                              
+0001041c  LCD_posicao                            
+000104f8  LCD_rs_rw                              
+0001019a  LCD_start                              
+00010456  LCD_wr_byte1                           
+0001034c  LCD_wr_nib1                            
 000004c4  MAC                                    
 000004da  MAC32H                                 
 000004db  MAC32H_H                               
@@ -599,7 +599,7 @@ address   name
 00000248  PCDS                                   
 00000249  PCDS_H                                 
 00000248  PCDS_L                                 
-000102fe  PCF_write                              
+00010316  PCF_write                              
 00000240  PCIN                                   
 00000241  PCIN_H                                 
 00000240  PCIN_L                                 
@@ -1077,9 +1077,9 @@ address   name
 00004538  __TI_Handler_Table_Base                
 00004544  __TI_Handler_Table_Limit               
 000044fc  __TI_ISR_TRAP                          
-0001026e  __TI_auto_init_nobinit_nopinit_hold_wdt
-00010186  __TI_decompress_lzss                   
-000104bc  __TI_decompress_none                   
+00010286  __TI_auto_init_nobinit_nopinit_hold_wdt
+00010210  __TI_decompress_lzss                   
+000104d4  __TI_decompress_none                   
 0000ffd2  __TI_int41                             
 0000ffd4  __TI_int42                             
 0000ffd6  __TI_int43                             
@@ -1105,32 +1105,32 @@ address   name
 ffffffff  __TI_pprof_out_hndl                    
 ffffffff  __TI_prof_data_size                    
 ffffffff  __TI_prof_data_start                   
-000103bc  __TI_zero_init_nomemset                
+000103d4  __TI_zero_init_nomemset                
 ffffffff  __c_args__                             
-00010368  __mspabi_divi                          
-0001046c  __mspabi_divu                          
-00010368  __mspabi_remi                          
-0001046c  __mspabi_remu                          
+00010380  __mspabi_divi                          
+00010484  __mspabi_divu                          
+00010380  __mspabi_remi                          
+00010484  __mspabi_remu                          
 000044e0  _c_int00_noargs                        
 0000fffe  _reset_vector                          
 00004360  _stack                                 
-00010532  _system_post_cinit                     
-0001052e  _system_pre_init                       
-00010528  abort                                  
+0001054a  _system_post_cinit                     
+00010546  _system_pre_init                       
+00010540  abort                                  
 00002422  distance                               
 00002400  distance_string                        
 00002428  fallingEdge                            
-000101fc  itoa                                   
+00010110  itoa                                   
 00002424  lastCount                              
-0001051a  lcdBacklightON                         
+00010532  lcdBacklightON                         
 00010000  main                                   
-00010496  memcpy                                 
+000104ae  memcpy                                 
 0000242a  pulseWidth                             
 00002426  risingEdge                             
-00010394  sendDistance                           
-000104ce  sendString                             
+000103ac  sendDistance                           
+000104e6  sendString                             
 0000242c  valor_porta                            
-000103e0  wait_receive                           
+000103f8  wait_receive                           
 
 
 GLOBAL SYMBOLS: SORTED BY Symbol Address 
@@ -1927,38 +1927,38 @@ address   name
 0000fffc  __TI_int62                             
 0000fffe  _reset_vector                          
 00010000  main                                   
-00010110  LCD_start                              
-00010186  __TI_decompress_lzss                   
-000101fc  itoa                                   
-0001026e  __TI_auto_init_nobinit_nopinit_hold_wdt
-000102c2  LCD_WR_NIB                             
-000102fe  PCF_write                              
-00010334  LCD_wr_nib1                            
-00010368  __mspabi_divi                          
-00010368  __mspabi_remi                          
-00010394  sendDistance                           
-000103bc  __TI_zero_init_nomemset                
-000103e0  wait_receive                           
-00010404  LCD_posicao                            
-00010426  LCD_WR_BT                              
-0001043e  LCD_wr_byte1                           
-00010456  LCD_RS_rw                              
-0001046c  __mspabi_divu                          
-0001046c  __mspabi_remu                          
-00010482  LCD_RS_rw1                             
-00010496  memcpy                                 
-000104aa  LCD_00                                 
-000104bc  __TI_decompress_none                   
-000104ce  sendString                             
-000104e0  LCD_rs_rw                              
-000104f0  LCD_OFF                                
-000104fe  LCD_ON                                 
-0001050c  LCD_char1                              
-0001051a  lcdBacklightON                         
-00010528  C$$EXIT                                
-00010528  abort                                  
-0001052e  _system_pre_init                       
-00010532  _system_post_cinit                     
+00010110  itoa                                   
+0001019a  LCD_start                              
+00010210  __TI_decompress_lzss                   
+00010286  __TI_auto_init_nobinit_nopinit_hold_wdt
+000102da  LCD_WR_NIB                             
+00010316  PCF_write                              
+0001034c  LCD_wr_nib1                            
+00010380  __mspabi_divi                          
+00010380  __mspabi_remi                          
+000103ac  sendDistance                           
+000103d4  __TI_zero_init_nomemset                
+000103f8  wait_receive                           
+0001041c  LCD_posicao                            
+0001043e  LCD_WR_BT                              
+00010456  LCD_wr_byte1                           
+0001046e  LCD_RS_rw                              
+00010484  __mspabi_divu                          
+00010484  __mspabi_remu                          
+0001049a  LCD_RS_rw1                             
+000104ae  memcpy                                 
+000104c2  LCD_00                                 
+000104d4  __TI_decompress_none                   
+000104e6  sendString                             
+000104f8  LCD_rs_rw                              
+00010508  LCD_OFF                                
+00010516  LCD_ON                                 
+00010524  LCD_char1                              
+00010532  lcdBacklightON                         
+00010540  C$$EXIT                                
+00010540  abort                                  
+00010546  _system_pre_init                       
+0001054a  _system_post_cinit                     
 ffffffff  __TI_pprof_out_hndl                    
 ffffffff  __TI_prof_data_size                    
 ffffffff  __TI_prof_data_start                   
