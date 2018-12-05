@@ -497,9 +497,6 @@ void LCD_clr1(void)
 
 void itoa(int i, char buffer[])
 {
-    buffer[0] = '\0';
-    buffer[1] = '\0';
-    buffer[2] = '\0';
     char const digit[] = "0123456789";
     char* p = buffer;
     if(i<0){
@@ -516,7 +513,6 @@ void itoa(int i, char buffer[])
         *--p = digit[i%10];
         i = i/10;
     }while(i);
-    __delay_cycles(100);
 //    return buffer;
 }
 
