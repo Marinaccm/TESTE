@@ -1,7 +1,7 @@
 ******************************************************************************
                   MSP430 Linker PC v18.1.3                     
 ******************************************************************************
->> Linked Wed Dec  5 20:01:40 2018
+>> Linked Wed Dec  5 20:25:20 2018
 
 OUTPUT FILE NAME:   <TESTE.out>
 ENTRY POINT SYMBOL: "_c_int00_noargs"  address: 000044e0
@@ -19,7 +19,7 @@ MEMORY CONFIGURATION
   INFOB                 00001900   00000080  00000000  00000080  RWIX
   INFOA                 00001980   00000080  00000000  00000080  RWIX
   USBRAM                00001c00   00000800  00000000  00000800  RWIX
-  RAM                   00002400   00002000  000000ce  00001f32  RWIX
+  RAM                   00002400   00002000  000000b0  00001f50  RWIX
   FLASH                 00004400   0000bb80  00000161  0000ba1f  RWIX
   INT00                 0000ff80   00000002  00000000  00000002  RWIX
   INT01                 0000ff82   00000002  00000000  00000002  RWIX
@@ -93,11 +93,11 @@ SECTION ALLOCATION MAP
  output                                  attributes/
 section   page    origin      length       input sections
 --------  ----  ----------  ----------   ----------------
-.bss       0    00002400    00000022     UNINITIALIZED
-                  00002400    00000022     (.common:distance_string)
+.data      0    00002400    0000000c     UNINITIALIZED
+                  00002400    0000000c     main.obj (.data)
 
-.data      0    00002422    0000000c     UNINITIALIZED
-                  00002422    0000000c     main.obj (.data)
+.bss       0    0000240c    00000004     UNINITIALIZED
+                  0000240c    00000004     (.common:distance_string)
 
 .stack     0    00004360    000000a0     UNINITIALIZED
                   00004360    00000004     rts430x_lc_rd_eabi.lib : boot.c.obj (.stack)
@@ -240,9 +240,9 @@ MODULE SUMMARY
        Module                       code   ro data   rw data
        ------                       ----   -------   -------
     .\
-       main.obj                     1204   53        46     
+       main.obj                     1204   53        16     
     +--+----------------------------+------+---------+---------+
-       Total:                       1204   53        46     
+       Total:                       1204   53        16     
                                                             
     C:\ti\ccsv8\tools\compiler\ti-cgt-msp430_18.1.3.LTS\lib\rts430x_lc_rd_eabi.lib
        copy_decompress_lzss.c.obj   118    0         0      
@@ -283,14 +283,14 @@ MODULE SUMMARY
        Stack:                       0      0         160    
        Linker Generated:            0      41        0      
     +--+----------------------------+------+---------+---------+
-       Grand Total:                 1594   136       206    
+       Grand Total:                 1594   136       176    
 
 
 LINKER GENERATED COPY TABLES
 
 __TI_cinit_table @ 00004552 records: 2, size/record: 8, table size: 16
-	.data: load addr=00004544, load size=00000007 bytes, run addr=00002422, run size=0000000c bytes, compression=lzss
-	.bss: load addr=0000454c, load size=00000006 bytes, run addr=00002400, run size=00000022 bytes, compression=zero_init
+	.data: load addr=00004544, load size=00000007 bytes, run addr=00002400, run size=0000000c bytes, compression=lzss
+	.bss: load addr=0000454c, load size=00000006 bytes, run addr=0000240c, run size=00000004 bytes, compression=zero_init
 
 
 LINKER GENERATED HANDLER TABLE
@@ -1117,19 +1117,19 @@ ffffffff  __c_args__
 00010532  _system_post_cinit                     
 0001052e  _system_pre_init                       
 00010528  abort                                  
-00002422  distance                               
-00002400  distance_string                        
-00002428  fallingEdge                            
+00002400  distance                               
+0000240c  distance_string                        
+00002406  fallingEdge                            
 000101fc  itoa                                   
-00002424  lastCount                              
+00002402  lastCount                              
 0001051a  lcdBacklightON                         
 00010000  main                                   
 00010496  memcpy                                 
-0000242a  pulseWidth                             
-00002426  risingEdge                             
+00002408  pulseWidth                             
+00002404  risingEdge                             
 00010394  sendDistance                           
 000104ce  sendString                             
-0000242c  valor_porta                            
+0000240a  valor_porta                            
 000103e0  wait_receive                           
 
 
@@ -1886,13 +1886,13 @@ address   name
 000023fd  USBIEPBBAY_7                           
 000023fe  USBIEPBCTY_7                           
 000023ff  USBIEPSIZXY_7                          
-00002400  distance_string                        
-00002422  distance                               
-00002424  lastCount                              
-00002426  risingEdge                             
-00002428  fallingEdge                            
-0000242a  pulseWidth                             
-0000242c  valor_porta                            
+00002400  distance                               
+00002402  lastCount                              
+00002404  risingEdge                             
+00002406  fallingEdge                            
+00002408  pulseWidth                             
+0000240a  valor_porta                            
+0000240c  distance_string                        
 00004360  _stack                                 
 00004400  TA0_ISR                                
 00004400  __STACK_END                            

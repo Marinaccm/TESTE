@@ -80,7 +80,7 @@ void itoa(int i, char buffer[]);    // transforma de inteiro para vetor de char
 // define the up-arrow bitmap
 
 int valor_porta = 0;                //Úlitmo valor escrito na porta
-char distance_string[33];
+char distance_string[3];
 
 void main(void)
 {
@@ -551,7 +551,7 @@ __interrupt void TA0_ISR(void){
                 P4OUT &= ~BIT7;
                 LCD_posicao(0x49);
                 sendString(" ");
-                LCD_posicao(0x4B);
+                LCD_posicao(0x49);
                 //itoa(pulseWidth, distance_string, 10);
                 itoa(pulseWidth, distance_string);
                 sendDistance(distance_string, 3);
