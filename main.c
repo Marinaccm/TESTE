@@ -98,7 +98,7 @@ void LCD_wr_byte1(char byte);
 void LCD_clr1(void);
 void itoa(int i, char buffer[]);    // transforma de inteiro para vetor de char
 void BUZZ_inic(void);
-
+void turnRight(int dir);            // Vira para direita caso dir = 0 ou para esquerda caso dir = 1
 
 // define the up-arrow bitmap
 
@@ -470,12 +470,53 @@ void sendString(char* str){
         LCD_WR_BT(*str++);
 }
 
+//void rotateLeftMotorRight(){
+//    // Rotate Left Motor
+//    P6OUT |=  BIT0;
+//    P6OUT &= ~BIT1;
+//
+//    // Stop Right Motor
+//    P6OUT &= ~BIT3;
+//    P6OUT &= ~BIT4;
+//}
+//
+//void rotateLeftMotorLeft(){
+//    // Rotate Left Motor
+//    P6OUT &= ~BIT0;
+//    P6OUT |=  BIT1;
+//
+//    // Stop Right Motor
+//    P6OUT &= ~BIT3;
+//    P6OUT &= ~BIT4;
+//}
+
+void turnRight(int dir){
+    if(dir == 0){
+        // Rotate Left Motor
+        P6OUT &= ~BIT0;
+        P6OUT &= ~BIT1;
+
+        // Stop Right Motor
+        P6OUT &= ~BIT3;
+        P6OUT |=  BIT4;
+    }
+    else if(dir == 1){
+        // Rotate Left Motor
+        P6OUT &= ~BIT0;
+        P6OUT |=  BIT1;
+
+        // Stop Right Motor
+        P6OUT &= ~BIT3;
+        P6OUT &= ~BIT4;
+    }
+}
+
 void sendDistance(char* str, int len){
     while(len--)
         if (*str)
             LCD_WR_BT(*str++);
         else
-            LCD_WR_BT(" ");
+            LCD_WR_BT(' ');
 }
 
 void LCD_rs_rw1(void) //escrever
