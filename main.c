@@ -17,7 +17,7 @@
 #include <msp430.h>
 //CONFIGURAR VARIAVEIS AUXILIARES
 
-#define MENOR_DISTANCIA 10
+#define MENOR_DISTANCIA 20
 
 //////Controle do LCD
 #define BIT_RS   BIT0
@@ -66,6 +66,7 @@ volatile unsigned int fallingEdge = 0;
 volatile unsigned int pulseWidth = 0;
 
 volatile unsigned int is_right = 1;
+volatile unsigned int is_left = 0;
 
 int Cont;
 
@@ -102,10 +103,10 @@ void LCD_wr_byte1(char byte);
 void LCD_clr1(void);
 void itoa(int i, char buffer[]);    // transforma de inteiro para vetor de char
 void BUZZ_inic(void);
-void turnRight();            // Vira para direita caso dir = 0 ou para esquerda caso dir = 1
+void turnRight(int flag);            // Vira para direita caso dir = 0 ou para esquerda caso dir = 1
 void MOTOR_inic();
 void MOTOR_stop();
-void vaiDireita();
+void vaiUrsal(int flag);
 void t1_inic();
 void t2_inic();
 
@@ -201,8 +202,8 @@ void wait_receive(long tempo)
     TA0CTL = TASSEL_2 | ID_0 | MC_1 | TACLR;
     //TA0CCR0 = tempo;                //tempo em us
     TA0CCTL0 &= ~TAIFG;             //Limpa IFG
-    TA0CCR0 = 192;                  //Conta as batidas do clock
-    TA0CCR1 = 96;                   //Duty-cycle
+    TA0CCR0 = 300;                  //Conta as batidas do clock
+    TA0CCR1 = 150;                   //Duty-cycle
     TA0CCTL1 = OUTMOD_6;            //Saída em "Toggle/Set":toggles para CCRn e seta para CCR0
 
     while((TA0CCTL0 & TAIFG) == 0); //Espera TAIFG não ser Zero
@@ -221,12 +222,12 @@ void MOTOR_inic(){
 
 void MOTOR_stop(){
     // Rotate Left Motor
-    P2OUT |=  BIT0;
-    P2OUT |=  BIT4;
+    P2OUT &= ~BIT0;
+    P2OUT &= ~BIT4;
 
     // Stop Right Motor
-    P1OUT |=  BIT5;
-    P1OUT |=  BIT4;
+    P1OUT &= ~BIT5;
+    P1OUT &= ~BIT4;
 }
 
 void PCF_write(char dado)
@@ -447,47 +448,76 @@ void sendString(char* str){
 //
 //void rotateLeftMotorLeft(){
 //    // Rotate Left Motor
-//    P6OUT &= ~BIT0;
-//    P6OUT |=  BIT1;
+//    P2OUT &= ~BIT0;
+//    P2OUT |=  BIT1;
 //
 //    // Stop Right Motor
 //    P6OUT &= ~BIT3;
 //    P6OUT &= ~BIT4;
 //}
 
-void turnRight(){
-    vaiDireita();
-    __delay_cycles(1e6*(90./120.));
+void turnRight(int flag){
+    vaiUrsal(flag);
+    __delay_cycles(1e6*(90./140.));
     MOTOR_inic();
 }
 
-void vaiDireita(){
-    switch (is_right)
-    {
-    case 0:
-        // Rotate Left Motor
-        P2OUT |=  BIT0;
-        P2OUT &= ~BIT4;
+void vaiUrsal(int flag){
+    if(is_right == 0) {
+        if(is_left == 0){ // 00
+            // Stop Left Motor
+            P2OUT &= ~BIT0;
+            P2OUT &= ~BIT4;
 
-        // Stop Right Motor
-        P1OUT &= ~BIT5;
-        P1OUT &= ~BIT4;
+            // Stop Right Motor
+            P1OUT &= ~BIT5;
+            P1OUT &= ~BIT4;
 
-        // Change direction
-        is_right = 1;
-        break;
-    case 1:
-        // Rotate Left Motor
-        P6OUT &= ~BIT0;
-        P6OUT &= ~BIT1;
+            // Change direction
+            is_right = 1;
+            is_left = 0;
+        }
+        else if(is_left == 1) { //01
+            // Rotate Left Motor
+            P2OUT |=  BIT0;
+            P2OUT &= ~BIT4;
 
-        // Stop Right Motor
-        P1OUT &= ~BIT5;
-        P1OUT |=  BIT4;
+            // Stop Right Motor
+            P1OUT &= ~BIT5;
+            P1OUT &= ~BIT4;
 
-        // Change direction
-        is_right = 0;
-        break;
+            // Change direction
+            is_right = 1;
+            is_left = 0;
+        }
+    }
+    else if(is_right == 1){ 
+        if(is_left == 0) { // 10
+            // Rotate Left Motor
+            P2OUT &= ~BIT0;
+            P2OUT &= ~BIT1;
+
+            // Stop Right Motor
+            P1OUT &= ~BIT5;
+            P1OUT |=  BIT4;
+
+            // Change direction
+            is_right = 0;
+            is_left = 1;
+        }
+        else if(is_left == 1) { //11
+            // Stop Left Motor
+            P2OUT &= ~BIT0;
+            P2OUT &= ~BIT1;
+
+            // Stop Right Motor
+            P1OUT &= ~BIT5;
+            P1OUT &= ~BIT4;
+
+            // Change direction
+            is_right = 0;
+            is_left = 1;
+        }
     }
 }
 
@@ -579,7 +609,7 @@ void itoa(int i, char buffer[])
         *--p = digit[i%10];
         i = i/10;
     }while(i);
-    __delay_cycles(100000);
+    __delay_cycles(1000);
     //    return buffer;
 }
 
@@ -717,7 +747,7 @@ __interrupt void TA0_ISR(void){
             distance = ((pulseWidth - lastCount)/2);
             //distance *= 17000; //speed of sound/2 considering the going and coming back
             //distance >>= 14;  // division by 16384 (2 ^ 14)
-            if (pulseWidth <= 38)
+            if (distance <= MENOR_DISTANCIA)
             {
                 // Turn on red LED
                 P1OUT |= BIT0;
@@ -725,24 +755,30 @@ __interrupt void TA0_ISR(void){
                 LCD_posicao(0x49);
                 sendString(" ");
                 LCD_posicao(0x4B);
-                //itoa(pulseWidth, distance_string, 10);
                 itoa(distance, distance_string);
                 sendDistance(distance_string, 3);
-                P6OUT |= BIT0; // P1OUT |= BIT4;
-                P6OUT &= ~BIT1; // P1OUT &= ~BIT5;
-                //P1OUT |= BIT4;//liga buzzer
                 __delay_cycles(10);
                 nota(0,100);
+                __delay_cycles(50);
+                // vaiUrsal();
+                if(distance < MENOR_DISTANCIA)
+                {
+                    turnRight(1);
+                    __delay_cycles(100);
+                    //                        turnRight(0);
+                    //__delay_cycles(10);
+                    if (distance < MENOR_DISTANCIA)
+                    {
+                        //                            MOTOR_stop();
+                        //                            __delay_cycles(500);
+                        nota(500, 1e3);
+                        nota(1000, 1e3);
+                        nota(1500, 1e3);
+                    }
+                }
             }
 
-            if ((pulseWidth > 38) && (pulseWidth <=77) )
-            {
-                //Turn on green LED
-                P1OUT &= ~BIT0;
-                P4OUT |= BIT7;
-                nota(0,100);
-            }
-            if (pulseWidth > 77)
+            if (distance > MENOR_DISTANCIA)
             {
                 // Turn on both
                 P1OUT |= BIT0;
@@ -750,26 +786,6 @@ __interrupt void TA0_ISR(void){
                 LCD_posicao(0x49);
                 sendString("> 200");
                 nota(0,100);
-            }
-            if (distance < MENOR_DISTANCIA)
-            {
-                __delay_cycles(500);
-                // vaiDireita();
-                if(distance < MENOR_DISTANCIA)
-                {
-                    turnRight();
-                    if(distance < MENOR_DISTANCIA)
-                    {
-                        turnRight();
-                        if (distance < MENOR_DISTANCIA)
-                        {
-                            MOTOR_stop();
-                            nota(500, 1e3);
-                            nota(1000, 1e3);
-                            nota(1500, 1e3);
-                        }
-                    }
-                }
             }
 
         } // Close if-else
