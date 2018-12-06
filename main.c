@@ -17,6 +17,8 @@
 #include <msp430.h>
 //CONFIGURAR VARIAVEIS AUXILIARES
 
+#define MENOR_DISTANCIA 10
+
 //////Controle do LCD
 #define BIT_RS   BIT0
 #define BIT_RW   BIT1
@@ -63,6 +65,8 @@ volatile unsigned int risingEdge = 0;
 volatile unsigned int fallingEdge = 0;
 volatile unsigned int pulseWidth = 0;
 
+volatile unsigned int is_right = 1;
+
 int Cont;
 
 const unsigned long UP[8]={0b00011000, 0b01110, 0b10101, 0b00100, 0b00100, 0b00100, 0b00000, 0b00000};//DEFINE MAP
@@ -98,7 +102,12 @@ void LCD_wr_byte1(char byte);
 void LCD_clr1(void);
 void itoa(int i, char buffer[]);    // transforma de inteiro para vetor de char
 void BUZZ_inic(void);
-void turnRight(int dir);            // Vira para direita caso dir = 0 ou para esquerda caso dir = 1
+void turnRight();            // Vira para direita caso dir = 0 ou para esquerda caso dir = 1
+void MOTOR_inic();
+void MOTOR_stop();
+void vaiDireita();
+void t1_inic();
+void t2_inic();
 
 // define the up-arrow bitmap
 
@@ -122,25 +131,25 @@ void main(void)
     P3REN |=  BIT1;             // Habilita resistor
     P3OUT |=  BIT1;             // Resistor do tipo Pull-up
 
-    //////Motor 1 IA
-    P6SEL |=  BIT0;             //Seta pino P6.0 como periférico
-    P6REN |=  BIT0;             // Habilita resistor
-    P6OUT |=  BIT0;             // Pull-up
+    //////Motor 1 IA 2.0
+    P2SEL |=  BIT0;             //Seta pino P2.0 como periférico
+    P2REN |=  BIT0;             // Habilita resistor
+    P2OUT |=  BIT0;             // Pull-up
 
-    //////Motor 1 IB
-    P6SEL |=  BIT1;             //Seta pino P6.1 como periférico
-    P6REN |=  BIT1;             // Habilita resistor
-    P6OUT |=  BIT1;             // Resistor do tipo Pull-up
+    //////Motor 1 IB 2.4
+    P2SEL |=  BIT4;             //Seta pino P6.1 como periférico
+    P2REN |=  BIT4;             // Habilita resistor
+    P2OUT |=  BIT4;             // Resistor do tipo Pull-up
 
-    //////Motor 2 IA
-    P6SEL |=  BIT1;             //Seta pino P6.0 como periférico
-    P6REN |=  BIT1;             // Habilita resistor
-    P6OUT |=  BIT1;             // Pull-up
+    //////Motor 2 IA 1.5
+    P1SEL |=  BIT5;             //Seta pino P6.0 como periférico
+    P1REN |=  BIT5;             // Habilita resistor
+    P1OUT |=  BIT5;             // Pull-up
 
-    //////Motor 2 IB
-    P6SEL |=  BIT2;             //Seta pino P6.1 como periférico
-    P6REN |=  BIT2;             // Habilita resistor
-    P6OUT |=  BIT2;             // Resistor do tipo Pull-up
+    //////Motor 2 IB 1.4
+    P1SEL |=  BIT4;             //Seta pino P6.1 como periférico
+    P1REN |=  BIT4;             // Habilita resistor
+    P1OUT |=  BIT4;             // Resistor do tipo Pull-up
 
 
     UCB0CTL1 |= UCSWRST;        // UCSI B0 em ressete
@@ -173,6 +182,7 @@ void main(void)
                     LCD_posicao(0x4E);
                     sendString("cm");
                     BUZZ_inic();
+                    MOTOR_inic();
                     t1_inic();
                     t2_inic();
                 }
@@ -191,12 +201,32 @@ void wait_receive(long tempo)
     TA0CTL = TASSEL_2 | ID_0 | MC_1 | TACLR;
     //TA0CCR0 = tempo;                //tempo em us
     TA0CCTL0 &= ~TAIFG;             //Limpa IFG
-    TA0CCR0 = 300;                  //Conta as batidas do clock
-    TA0CCR1 = 150;                   //Duty-cycle
+    TA0CCR0 = 192;                  //Conta as batidas do clock
+    TA0CCR1 = 96;                   //Duty-cycle
     TA0CCTL1 = OUTMOD_6;            //Saída em "Toggle/Set":toggles para CCRn e seta para CCR0
 
     while((TA0CCTL0 & TAIFG) == 0); //Espera TAIFG não ser Zero
 
+}
+
+void MOTOR_inic(){
+    // Rotate Left Motor
+    P2OUT |=  BIT0;
+    P2OUT &= ~BIT4;
+
+    // Stop Right Motor
+    P1OUT &= ~BIT5;
+    P1OUT |=  BIT4;
+}
+
+void MOTOR_stop(){
+    // Rotate Left Motor
+    P2OUT |=  BIT0;
+    P2OUT |=  BIT4;
+
+    // Stop Right Motor
+    P1OUT |=  BIT5;
+    P1OUT |=  BIT4;
 }
 
 void PCF_write(char dado)
@@ -425,24 +455,39 @@ void sendString(char* str){
 //    P6OUT &= ~BIT4;
 //}
 
-void turnRight(int dir){
-    if(dir == 0){
+void turnRight(){
+    vaiDireita();
+    __delay_cycles(1e6*(90./120.));
+    MOTOR_inic();
+}
+
+void vaiDireita(){
+    switch (is_right)
+    {
+    case 0:
+        // Rotate Left Motor
+        P2OUT |=  BIT0;
+        P2OUT &= ~BIT4;
+
+        // Stop Right Motor
+        P1OUT &= ~BIT5;
+        P1OUT &= ~BIT4;
+
+        // Change direction
+        is_right = 1;
+        break;
+    case 1:
         // Rotate Left Motor
         P6OUT &= ~BIT0;
         P6OUT &= ~BIT1;
 
         // Stop Right Motor
-        P6OUT &= ~BIT3;
-        P6OUT |=  BIT4;
-    }
-    else if(dir == 1){
-        // Rotate Left Motor
-        P6OUT &= ~BIT0;
-        P6OUT |=  BIT1;
+        P1OUT &= ~BIT5;
+        P1OUT |=  BIT4;
 
-        // Stop Right Motor
-        P6OUT &= ~BIT3;
-        P6OUT &= ~BIT4;
+        // Change direction
+        is_right = 0;
+        break;
     }
 }
 
@@ -705,6 +750,26 @@ __interrupt void TA0_ISR(void){
                 LCD_posicao(0x49);
                 sendString("> 200");
                 nota(0,100);
+            }
+            if (distance < MENOR_DISTANCIA)
+            {
+                __delay_cycles(500);
+                // vaiDireita();
+                if(distance < MENOR_DISTANCIA)
+                {
+                    turnRight();
+                    if(distance < MENOR_DISTANCIA)
+                    {
+                        turnRight();
+                        if (distance < MENOR_DISTANCIA)
+                        {
+                            MOTOR_stop();
+                            nota(500, 1e3);
+                            nota(1000, 1e3);
+                            nota(1500, 1e3);
+                        }
+                    }
+                }
             }
 
         } // Close if-else
