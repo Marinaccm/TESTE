@@ -107,9 +107,6 @@ char distance_string[5];
 
 void main(void)
 {
-    BUZZ_inic();
-    t2_inic();
-
     WDTCTL = WDTPW | WDTHOLD;                   //Stop watchdog timer
 
 
@@ -156,94 +153,32 @@ void main(void)
 
     UCB0CTL1 = UCSSEL_2;        //SMCLK e remove ressete
 
+
     LCD_start();
     LCD_00();
     LCD_posicao(0x00);
     lcdBacklightON();
     LCD_RS_rw();
-    LCD_posicao(0x8);
-    LCD_char1(0x7E);
-    LCD_posicao(0x7);
-    LCD_char1(0x7F);
-    LCD_posicao(0x01);
-    sendString("CLEANING TIME!");
-    LCD_posicao(0x40);
-    sendString("Distance:");
-    LCD_posicao(0x4E);
-    sendString("cm");
 
-    //TRIGGER
-
-    // To configure the trigger it was chosen to use timer A0, capture and comparison
-    //Initially configured to determine interruption upon detection of a up slope
-    //Pin 1.2 is going to be associated with the trigger pin (output)
-    P1DIR |= TRIGGER_PIN;   //Defined above as Pin 1.2
-    P1OUT &= ~TRIGGER_PIN;  //Trigger is low to start
-    //LEDs
-
-    // To configure the LEDs we called
-    P1DIR |= BIT0;  //RED LED, P1.0
-    P1OUT &= ~BIT0; //RED LED STARTS OFF
-
-    P4DIR |= BIT7;  //GREEN LED, P4.7
-    P4OUT &= ~BIT7; //GREEN LED STARTS OFF
-
-    //BOTÃO
-    P2DIR &= ~BIT1; //Configures s1 as input
-    P2REN |= BIT1;  //Relative to the resistor
-    P2OUT |= BIT1;  //pull up
-    //P2IE |= BIT1;   //local interruption
-    //P2IES |= BIT1;  //edge select
-    //P2IFG = 0;  //keeps interruption flags
-
-    // To configure the BUZZER we called
-    P3DIR |= BIT5;  //Buzzer, P1.4
-    P3SEL &= ~BIT5;  //Relative to the resistor
-    P3OUT |= BIT5; //Buzzer stars off
-
-    //ECHO
-
-    //Output for SR04 and input for distance processing
-    //Pin 1.3 (Input/peripheral), we chose to use ccr2  to capture the time stamp
-    P1SEL |= BIT3;  //Sets P1.3 as the peripheral
-    P1DIR &= ~BIT3;  //(ECHO INPUT: CCI2A from TA0CCR2)
-    //P1REN |= R_ECHO;    //Selects pull-up resistor function
-    //P1OUT &= ~R_ECHO;   //Selects pull-down resistor function
-
-
-    //TIMERS
-    //
-    //    // TIMER A1 WAS CHOSEN TO GENERATE THE PWM SIGNAL
-    //    //generates two interruptions in order to build the PWM wave that feeds the input of the SR04 (trigger)
-    //    TA1CTL = TASSEL_1|MC_1|TACLR|TAIE;
-    //    //First we select the clock source as ACLK//then the timer is put in UP MODE//Reset the timer//TAIE calls off the flag TAIFG
-    //    TA1CCR0 = 200;//Defines the frequency of the PWM wave
-    //    //For it to be able to read measures at distances of up to 1 meter, it makes itself necessary that the time between waves to be at least 6ms (2/velocity of sound = 2m/343 m/s), seeing as it needs to account for the distance from and to the sensor
-    //    //200 means (200/32768=6,1ms -> 6,1ms*343=2m)
-    //    //TA1CCR0 = 393;  //The problem asks for the maximum duration to be of 12ms, so X= 0,012/91/32768)= 393,216
-    //    TA1CCR1 = 100;//Defines the duty-cycle of the PWM wave
-    //    //TA1CCR1 =
-    //    TA1CCTL0 = CCIE;
-    //    TA1CCTL1 = CCIE; //Not strictly essential, but values were being wrongly allocated before this line was added
-    //
-
-    // TIMER A0 WAS CHOSEN TO SEND THE TRIGGER AND RECIEVE THE ECHO SIGNALS
-    //A0 is used in capture mode (CM_3) to gather the value at the up slope and the down slope,
-    //Therefore, as a result we should have the pulse width of the echo
-    //Setting up TA0 to capture in CCR2 on both edges
-    TA0CCTL2 = CM_3 | CCIS_0 | SCS | CAP | CCIE;
-    //Capture both edges/select the capture input (CCI2A, pin 1.3)/sync capture with timer/capture mode (0 would be comparison)/interrupt CCIFG                        TA0CCTL0 = CCIE;
-    //TA0CCTL0 = CCIE;
-    TA0CCTL1 = CCIE; //Not strictly essential, but values were being wrongly allocated before this line was added
-    //CONTADOR DO TIMER A0
-    TA0CTL = TASSEL_1|MC_1|TACLR|TAIE;
-    //First we select the clock source as ACLK//then the timer is put in UP MODE//Reset the timer//TAIE calls off the flag TAIFG
-    TA0CCR1 = 4;//Pulse width should be at least 10us, so y= 3,2768, used 4 to a trigger duration of 12,2us
-    TA0CCR0 = 393;  //The problem asks for the maximum duration to be of 12ms, so X= 0,012/91/32768)= 393,216
-
-    __enable_interrupt();
-
-    while(1);
+    while(1){
+        if ((P2IN & BIT1)==0){
+            __delay_cycles(1000000);
+            if ((P2IN & BIT1)==0){
+                __delay_cycles(1000000);
+                if ((P2IN & BIT1)==0){
+                    LCD_posicao(0x01);
+                    sendString("CLEANING TIME!");
+                    LCD_posicao(0x40);
+                    sendString("Distance:");
+                    LCD_posicao(0x4E);
+                    sendString("cm");
+                    BUZZ_inic();
+                    t1_inic();
+                    t2_inic();
+                }
+            }
+        }
+    }
 
 }
 
@@ -596,6 +531,69 @@ void nota(int freq, int tempo){
     }
     P2SEL |= BIT5;
 }
+
+
+void t1_inic(void){
+
+    //TRIGGER
+
+    // To configure the trigger it was chosen to use timer A0, capture and comparison
+    //Initially configured to determine interruption upon detection of a up slope
+    //Pin 1.2 is going to be associated with the trigger pin (output)
+    P1DIR |= TRIGGER_PIN;   //Defined above as Pin 1.2
+    P1OUT &= ~TRIGGER_PIN;  //Trigger is low to start
+    //LEDs
+
+    // To configure the LEDs we called
+    P1DIR |= BIT0;  //RED LED, P1.0
+    P1OUT &= ~BIT0; //RED LED STARTS OFF
+
+    P4DIR |= BIT7;  //GREEN LED, P4.7
+    P4OUT &= ~BIT7; //GREEN LED STARTS OFF
+
+    //BOTÃO
+    P2DIR &= ~BIT1; //Configures s1 as input
+    P2REN |= BIT1;  //Relative to the resistor
+    P2OUT |= BIT1;  //pull up
+    //P2IE |= BIT1;   //local interruption
+    //P2IES |= BIT1;  //edge select
+    //P2IFG = 0;  //keeps interruption flags
+
+    // To configure the BUZZER we called
+    P3DIR |= BIT5;  //Buzzer, P1.4
+    P3SEL &= ~BIT5;  //Relative to the resistor
+    P3OUT |= BIT5; //Buzzer stars off
+
+    //ECHO
+
+    //Output for SR04 and input for distance processing
+    //Pin 1.3 (Input/peripheral), we chose to use ccr2  to capture the time stamp
+    P1SEL |= BIT3;  //Sets P1.3 as the peripheral
+    P1DIR &= ~BIT3;  //(ECHO INPUT: CCI2A from TA0CCR2)
+    //P1REN |= R_ECHO;    //Selects pull-up resistor function
+    //P1OUT &= ~R_ECHO;   //Selects pull-down resistor function
+
+
+    //TIMERS
+    //
+    // TIMER A0 WAS CHOSEN TO SEND THE TRIGGER AND RECIEVE THE ECHO SIGNALS
+    //A0 is used in capture mode (CM_3) to gather the value at the up slope and the down slope,
+    //Therefore, as a result we should have the pulse width of the echo
+    //Setting up TA0 to capture in CCR2 on both edges
+    TA0CCTL2 = CM_3 | CCIS_0 | SCS | CAP | CCIE;
+    //Capture both edges/select the capture input (CCI2A, pin 1.3)/sync capture with timer/capture mode (0 would be comparison)/interrupt CCIFG                        TA0CCTL0 = CCIE;
+    //TA0CCTL0 = CCIE;
+    TA0CCTL1 = CCIE; //Not strictly essential, but values were being wrongly allocated before this line was added
+    //CONTADOR DO TIMER A0
+    TA0CTL = TASSEL_1|MC_1|TACLR|TAIE;
+    //First we select the clock source as ACLK//then the timer is put in UP MODE//Reset the timer//TAIE calls off the flag TAIFG
+    TA0CCR1 = 4;//Pulse width should be at least 10us, so y= 3,2768, used 4 to a trigger duration of 12,2us
+    TA0CCR0 = 393;  //The problem asks for the maximum duration to be of 12ms, so X= 0,012/91/32768)= 393,216
+
+    __enable_interrupt();
+
+}
+
 
 void t2_inic(void){
     TA2CTL = TASSEL_2|ID_0|MC_1|TACLR;
