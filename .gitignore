@@ -1,0 +1,11 @@
+.launches/*
+.settings/*
+Debug/main.obj
+targetConfigs/*
+lnk_msp430f5529.cmd
+*.obj
+*.mk
+*.map
+*.out
+*.xml
+*.prefs

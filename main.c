@@ -559,6 +559,7 @@ void itoa(int i, char buffer[])
         i = i/10;
     }while(i);
     __delay_cycles(100000);
+    //    return buffer;
 }
 
 void BUZZ_inic(void){
